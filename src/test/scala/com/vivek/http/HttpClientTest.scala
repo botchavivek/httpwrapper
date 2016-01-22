@@ -15,6 +15,9 @@ class HttpClientTest extends FunSpec {
     res.statusCode should be(200)
     EntityUtils.toString(res.body) should include("google")
 
+    val res2: Response  = client.post("http://google.com")
+    res2.statusCode should be(405)
+
   }
 
   def convertToString(response: Response) = {
