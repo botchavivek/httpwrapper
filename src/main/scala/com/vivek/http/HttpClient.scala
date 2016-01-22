@@ -1,24 +1,29 @@
 package com.vivek.http
 
-import org.apache.http.HttpEntity
-import org.apache.http.client.methods.{HttpPost, HttpGet}
+import com.vivek.http.Method._
+import org.apache.http.client.methods.{HttpGet, HttpPost}
 import org.apache.http.impl.client.HttpClients
-import Method._
+import org.apache.http.{HttpResponse => ApacheResponse}
 
-class HttpClient {
+trait HttpClient {
+  def get[K](path: String)(implicit convert: ApacheResponse => K): K
+  def post[K](path: String)(implicit convert: ApacheResponse => K): K
+}
 
-  implicit val convert:  Response => Response = res => res
+object HttpClient {
+  implicit val convert: ApacheResponse => HttpResponse = res => HttpResponse(res)
+}
 
-
-  def get[K](path: String)(implicit convert: Response => K): K = {
+class DefaultHttpClient extends HttpClient {
+  def get[K](path: String)(implicit convert: ApacheResponse => K): K = {
     execute(GET, path)
   }
 
-  def post[K](path: String)(implicit convert: Response => K): K = {
+  def post[K](path: String)(implicit convert: ApacheResponse => K): K = {
     execute(POST, path)
   }
 
-  def execute[K](method: String, path: String)(implicit convert: Response => K): K = {
+  def execute[K](method: String, path: String)(implicit convert: ApacheResponse => K): K = {
     val httpclient = HttpClients.createDefault()
 
     val request = method match {
@@ -27,17 +32,12 @@ class HttpClient {
     }
     val response = httpclient.execute(request)
 
-    convert(HttpResponse(response.getStatusLine.getStatusCode, response.getEntity))
+    convert(response)
   }
 }
 
 
-trait Response {
-  def statusCode: Int
-  def body: HttpEntity
-}
 
-case class HttpResponse(statusCode: Int, body: HttpEntity) extends Response
-case class StringHttpResponse(statusCode: Int, body: String)
+
 
 
