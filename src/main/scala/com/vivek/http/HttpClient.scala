@@ -5,10 +5,14 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 
 class HttpClient {
-  def get[T,K](path: String)(convert: Response => K)(block: K => T): T = {
+
+  implicit val convert:  Response => Response = res => res
+
+
+  def get[K](path: String)(implicit convert: Response => K): K = {
     val httpclient = HttpClients.createDefault();
     val response = httpclient.execute(new HttpGet(path))
-    block(convert(HttpResponse(response.getStatusLine.getStatusCode, response.getEntity)))
+    convert(HttpResponse(response.getStatusLine.getStatusCode, response.getEntity))
   }
 }
 
