@@ -1,7 +1,6 @@
 package com.vivek.http
 
 import org.apache.http.util.EntityUtils
-import org.apache.http.{HttpEntity, HttpResponse}
 import org.apache.http.{HttpEntity, HttpResponse => ApacheResponse}
 
 object Response {
@@ -21,5 +20,5 @@ case class HttpResponse(response: ApacheResponse) extends Response[HttpEntity] {
 }
 
 case class StringHttpResponse(response: ApacheResponse) extends Response[String] {
-  override def body: String = EntityUtils.toString(response.getEntity)
+  override def body = EntityUtils.toString(response.getEntity)
 }
