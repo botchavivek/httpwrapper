@@ -3,6 +3,7 @@ package com.vivek.http
 import org.apache.http.HttpEntity
 import org.apache.http.client.methods.{HttpPost, HttpGet}
 import org.apache.http.impl.client.HttpClients
+import Method._
 
 class HttpClient {
 
@@ -17,7 +18,7 @@ class HttpClient {
     execute(POST, path)
   }
 
-  def execute[K](method: Method, path: String)(implicit convert: Response => K): K = {
+  def execute[K](method: String, path: String)(implicit convert: Response => K): K = {
     val httpclient = HttpClients.createDefault()
 
     val request = method match {
@@ -29,10 +30,6 @@ class HttpClient {
     convert(HttpResponse(response.getStatusLine.getStatusCode, response.getEntity))
   }
 }
-
-abstract class Method(name: String)
-object GET extends Method("get")
-object POST extends Method("post")
 
 
 trait Response {
